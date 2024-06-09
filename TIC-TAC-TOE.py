@@ -1,13 +1,24 @@
+
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 
 class TicTacToe:
     def __init__(self, root):
         self.root = root
         self.root.title("Tic-Tac-Toe")
-        self.board = [" " for _ in range(9)]
+
+        # Initialize players
+        self.player1 = simpledialog.askstring("Input", "Enter name for Player 1 (X):", parent=self.root)
+        self.player2 = simpledialog.askstring("Input", "Enter name for Player 2 (O):", parent=self.root)
+        self.current_player_name = self.player1
         self.current_player = "X"
+
+        self.board = [" " for _ in range(9)]
         self.buttons = [tk.Button(root, text=" ", font='Arial 20', width=5, height=2, command=lambda i=i: self.click(i)) for i in range(9)]
+        
+        self.status_label = tk.Label(root, text=f"{self.current_player_name}'s turn", font='Arial 15')
+        self.status_label.grid(row=3, column=0, columnspan=3)
+
         self.create_board()
 
     def create_board(self):
@@ -20,14 +31,22 @@ class TicTacToe:
         if self.board[index] == " ":
             self.board[index] = self.current_player
             self.buttons[index].config(text=self.current_player)
+
             if self.check_winner():
-                messagebox.showinfo("Tic-Tac-Toe", f"Player {self.current_player} wins!")
+                messagebox.showinfo("Tic-Tac-Toe", f"{self.current_player_name} wins!")
                 self.reset_game()
             elif " " not in self.board:
                 messagebox.showinfo("Tic-Tac-Toe", "It's a tie!")
                 self.reset_game()
             else:
-                self.current_player = "O" if self.current_player == "X" else "X"
+                # Switch players
+                if self.current_player == "X":
+                    self.current_player = "O"
+                    self.current_player_name = self.player2
+                else:
+                    self.current_player = "X"
+                    self.current_player_name = self.player1
+                self.status_label.config(text=f"{self.current_player_name}'s turn")
 
     def check_winner(self):
         winning_combinations = [
@@ -43,6 +62,8 @@ class TicTacToe:
     def reset_game(self):
         self.board = [" " for _ in range(9)]
         self.current_player = "X"
+        self.current_player_name = self.player1
+        self.status_label.config(text=f"{self.current_player_name}'s turn")
         for button in self.buttons:
             button.config(text=" ")
 
@@ -50,10 +71,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     game = TicTacToe(root)
     root.mainloop()
-
-
-
-
-
-
-
